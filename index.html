@@ -38,7 +38,8 @@
     }
     </script>
     <script type="module">
-        import { WebGLRenderer, PerspectiveCamera, Scene, Color, Vector3, SphereGeometry, MeshBasicMaterial, Mesh, Texture, PlaneGeometry, DoubleSide, MeshStandardMaterial } from 'https://unpkg.com/three@0.157.0/build/three.module.js';
+        import { WebGLRenderer, PerspectiveCamera, Scene, Color, Vector3, SphereGeometry, CylinderGeometry, MeshBasicMaterial, Mesh, Texture, PlaneGeometry, DoubleSide, MeshStandardMaterial } from 'https://unpkg.com/three@0.157.0/build/three.module.js';
+
         import { OrbitControls } from 'https://unpkg.com/three@0.157.0/examples/jsm/controls/OrbitControls.js';
         import { LumaSplatsThree } from '@lumaai/luma-web';
 
@@ -50,21 +51,21 @@ function isChrome() {
         // Parameters
         const parameters = {
             camera: {
-                minY: -1,
+                minY: -0.4,
                 maxZoomOut: 1000,
-                startPosition: { x: 0, y: 0.8, z: 2.5 },
+                startPosition: { x: 0, y: 0.2, z: 2.5 },
             },
             scene: {
-                origin: { x: 0, y: -1.2, z: 0 },
-                maxDistanceFromCenter: 8.7,
+                origin: { x: 0, y: -0.9, z: 0 },
+                maxDistanceFromCenter: 45,
                 targetLimit: {
-                    x: 0,
-                    z: 0
+                    x: 5,
+                    z: 5
                 }
             },
             animation: {
                 autoRotate: true,
-                startRadius: 5,
+                startRadius: 2.95,
                 speed: 0.003
             },
             rebound: {
@@ -72,6 +73,108 @@ function isChrome() {
                 elasticity: 0.05
             }
         };
+
+
+
+
+
+const hotspotConfigurations = [
+    { text: 'Tract 1', position: { x: -2, y: -0.7, z: 3 }, scale: 1 },
+    { text: 'Tract 1', position: { x: -0.9, y: -1.8, z: -1.6 }, scale: 1 },
+    { text: 'Tract 2', position: { x: -2, y: -0.4, z: 6 }, scale: 1 },
+    { text: 'Tract 2', position: { x: -1.6, y: -2.3, z: -4.6 }, scale: 1 },
+    
+    // Add more Hotspots here
+];
+
+
+
+
+
+
+
+	// Centralized control section for BorderDots and BorderLines
+const borderDotPositions = [
+    { name: 'BorderDot_1', position: { x: -2.7, y: -0.4, z: 7.2 } },
+    { name: 'BorderDot_2', position: { x: -2.8, y: -0.9, z: 0 } },
+    { name: 'BorderDot_3', position: { x: -2.8, y: -2.45, z: -5.38 } },
+    { name: 'BorderDot_4', position: { x: -2.1, y: -2.45, z: -5.45 } },
+    { name: 'BorderDot_5', position: { x: -1.1, y: -2.45, z: -5 } },
+    { name: 'BorderDot_6', position: { x: -0.25, y: -2.45, z: -4 } },
+    
+    { name: 'BorderDot_7', position: { x: -2.5, y: -2.1, z: -4 } },
+    { name: 'BorderDot_8', position: { x: -2.5, y: -0.9, z: 0 } },
+    { name: 'BorderDot_9', position: { x: -2.4, y: -0.5, z: 5 } },
+    { name: 'BorderDot_10', position: { x: -0.7, y: -0.6, z: 5 } },
+    { name: 'BorderDot_11', position: { x: -0.5, y: -0.6, z: 7.2 } },
+    
+    { name: 'BorderDot_12', position: { x: -0.9, y: -0.8, z: 3 } },
+    { name: 'BorderDot_13', position: { x: -1.1, y: -1, z: 2 } },
+    { name: 'BorderDot_14', position: { x: -1.3, y: -1, z: 1.3 } },
+    { name: 'BorderDot_15', position: { x: -1.5, y: -1, z: 1 } },
+    { name: 'BorderDot_16', position: { x: -1.8, y: -1, z: 0.7 } },
+    { name: 'BorderDot_17', position: { x: -2, y: -1, z: 0.6 } },
+    { name: 'BorderDot_18', position: { x: -2.3, y: -1, z: 0.56 } },
+    
+    { name: 'BorderDot_19', position: { x: -0.9, y: -1.1, z: 0.56 } },
+    { name: 'BorderDot_20', position: { x: 2.85, y: -2.3, z: 0.56 } },
+    { name: 'BorderDot_21', position: { x: 1.1, y: -2.3, z: -2 } },
+    
+    
+    // Add more BorderDots here by simply adding more objects
+];
+
+const borderLineConnections = [
+    { start: 'BorderDot_1', end: 'BorderDot_2' },
+    { start: 'BorderDot_2', end: 'BorderDot_3' },
+	{ start: 'BorderDot_3', end: 'BorderDot_4' },
+	{ start: 'BorderDot_4', end: 'BorderDot_5' },
+	{ start: 'BorderDot_5', end: 'BorderDot_6' },
+	{ start: 'BorderDot_6', end: 'BorderDot_7' },
+	
+	{ start: 'BorderDot_7', end: 'BorderDot_8' },
+	{ start: 'BorderDot_8', end: 'BorderDot_9' },
+	{ start: 'BorderDot_9', end: 'BorderDot_10' },
+	{ start: 'BorderDot_10', end: 'BorderDot_11' },
+	{ start: 'BorderDot_11', end: 'BorderDot_1' },
+
+	{ start: 'BorderDot_10', end: 'BorderDot_12' },
+	{ start: 'BorderDot_12', end: 'BorderDot_13' },
+	{ start: 'BorderDot_13', end: 'BorderDot_14' },
+	{ start: 'BorderDot_14', end: 'BorderDot_15' },
+	{ start: 'BorderDot_15', end: 'BorderDot_16' },
+	{ start: 'BorderDot_16', end: 'BorderDot_17' },
+	{ start: 'BorderDot_17', end: 'BorderDot_18' },
+	{ start: 'BorderDot_18', end: 'BorderDot_19' },
+	{ start: 'BorderDot_19', end: 'BorderDot_20' },
+	
+	{ start: 'BorderDot_20', end: 'BorderDot_21' },
+	{ start: 'BorderDot_21', end: 'BorderDot_6' },
+	
+	
+	
+    // Add more BorderLine connections here
+];
+
+
+
+
+
+
+
+
+
+
+// Border Dot Parameters
+const borderDotParams = {
+    radius: 0.016, // Smaller radius than the white dots
+    widthSegments: 16, // Less detail since these are smaller
+    heightSegments: 16,
+    color: 0xffa500 // Orange color for differentiation (can be changed later)
+};
+
+
+
 
 
 if (isChrome()) {
@@ -119,190 +222,153 @@ if (isChrome()) {
         });
 
         let splat = new LumaSplatsThree({
-            source: 'https://lumalabs.ai/embed/ac10d788-558b-4bae-b288-ab8666a4ea0e?mode=sparkles&background=%23ffffff&color=%23000000&showTitle=true&loadBg=true&logoPosition=bottom-left&infoPosition=bottom-right&cinematicVideo=undefined&showMenu=false',
-            particleRevealEnabled: true,
-            particleRevealDuration: 3.33 // Speed up by 50%
-        });
-        scene.add(splat);
+    source: 'https://lumalabs.ai/embed/ac10d788-558b-4bae-b288-ab8666a4ea0e?mode=sparkles&background=%23ffffff&color=%23000000&showTitle=true&loadBg=true&logoPosition=bottom-left&infoPosition=bottom-right&cinematicVideo=undefined&showMenu=false',
+    particleRevealEnabled: true,
+    particleRevealDuration: 3.33 // Speed up by 50%
+});
 
-        // Creating a white dot
-        let dotGeometry = new SphereGeometry(0.03, 32, 32);
-        let dotMaterial = new MeshBasicMaterial({ color: 0xffffff }); // white color
-        let dot = new Mesh(dotGeometry, dotMaterial);
-        dot.position.set(-1.9, -0.6, 3.6); // Position 5 units above the origin
-        scene.add(dot);
-
-// Create canvas for text
-        const canvas = document.createElement('canvas');
-        const context = canvas.getContext('2d');
-        canvas.width = 1054;
-        canvas.height = 512;
-        context.fillStyle = 'rgba(255, 255, 255, 0)';
-        context.fillRect(0, 0, canvas.width, canvas.height);
-        context.fillStyle = 'white';
-        context.font = '250px sans-serif';
-        context.textAlign = 'center';
-        context.textBaseline = 'middle';
-        context.strokeStyle = 'rgba(0, 0, 0, 0.5)';
-        context.lineWidth = 5;
-        context.fillText('Tract 2', canvas.width / 2, canvas.height / 2);
-        context.strokeText('Tract 2', canvas.width / 2, canvas.height / 2);
-
-        // Create texture from canvas
-        const texture = new Texture(canvas);
-        texture.needsUpdate = true;        
+// Apply depth testing and lower render order for the splat
+splat.material.depthTest = true;
+splat.renderOrder = 999;  // Ensure the splat is rendered before the border
+scene.add(splat);
 
 
-        // Create plane geometry and mesh
-        const geometry = new PlaneGeometry(0.8, 0.4);
-        const material = new MeshStandardMaterial({
-            map: texture,
-            transparent: false,
-            alphaTest: 0.5,
-            side: DoubleSide,
-            premultipliedAlpha: true,
-            emissive: 'white',
-            emissiveIntensity: 2,
-        });
-        const textPlane = new Mesh(geometry, material);
 
-        textPlane.geometry.translate(0,0.2,0);
-
-        // Position and rotate text plane
-        textPlane.position.set(-1.9, -0.6, 3.6);
-        textPlane.rotation.y = Math.PI / 2;
-        textPlane.scale.setScalar(0.8);
-        scene.add(textPlane);
-        textPlane.geometry.translate(0,-0.2,0);
+const totalHotspots = hotspotConfigurations.length;
+const hotspots = hotspotConfigurations.map((config, index) => createHotspot(config, index, totalHotspots));
 
 
 
 
 
-        // Creating a second white dot
-        let dot2 = new Mesh(dotGeometry, dotMaterial);
-        dot2.position.set(-1.3, -2, -2.8); // Shift 1 unit on the x-axis
-        scene.add(dot2);
 
-        // Create canvas for second text
-        const canvas2 = document.createElement('canvas');
-        const context2 = canvas2.getContext('2d');
-        canvas2.width = 1024;
-        canvas2.height = 512;
-        context2.fillStyle = 'rgba(255, 255, 255, 0)';
-        context2.fillRect(0, 0, canvas2.width, canvas2.height);
-        context2.fillStyle = 'white';
-        context2.font = '250px sans-serif';
-        context2.textAlign = 'center';
-        context2.textBaseline = 'middle';
-        context2.strokeStyle = 'rgba(0, 0, 0, 0.5)';
-        context2.lineWidth = 5;
-        context2.fillText('Tract 2', canvas2.width / 2, canvas2.height / 2);
-        context2.strokeText('Tract 2', canvas2.width / 2, canvas2.height / 2);
 
-        // Create texture from second canvas
-        const texture2 = new Texture(canvas2);
-        texture2.needsUpdate = true;
+// Function to create a BorderDot based on position data
+function createBorderDot(dotData) {
+    const { name, position } = dotData;
+    let borderDotGeometry = new SphereGeometry(borderDotParams.radius, borderDotParams.widthSegments, borderDotParams.heightSegments);
+    let borderDotMaterial = new MeshBasicMaterial({ color: 0xffa500 });
+    let borderDot = new Mesh(borderDotGeometry, borderDotMaterial);
 
-        // Create plane geometry and mesh for second text
-        const textPlane2 = new Mesh(geometry, material.clone());
-        textPlane2.material.map = texture2;
-        textPlane2.material.needsUpdate = true;
+    // Set the position
+    borderDot.position.set(position.x, position.y, position.z);
+    
+    // Add the border dot to the scene
+    scene.add(borderDot);
+    
+    return { name, mesh: borderDot };
+}
 
-        textPlane2.geometry.translate(0,0.2,0);
 
-        // Position and rotate second text plane
-        textPlane2.position.set(-1.3, -2, -2.8); // Shift 1 unit on the x-axis
-        textPlane2.rotation.y = Math.PI / 2;
-        textPlane2.scale.setScalar(0.8);
-        scene.add(textPlane2);
+// Define the radial segments and material for the cylinders (BorderLines)
+const cylinderRadialSegments = 32; // Radial segments for smoother cylinders
+const cylinderMaterial = new MeshBasicMaterial({ color: 0xffa500 }); // White color for BorderLines
 
 
 
+// Function to create a BorderLine between two BorderDots
+function createBorderLineBetweenDots(dot1, dot2) {
+    const direction = new Vector3().subVectors(dot2.position, dot1.position);
+    const length = direction.length();
+    const cylinderGeometry = new CylinderGeometry(borderDotParams.radius, borderDotParams.radius, length, cylinderRadialSegments);
+    const cylinder = new Mesh(cylinderGeometry, cylinderMaterial);
 
+    const midpoint = new Vector3().addVectors(dot1.position, dot2.position).multiplyScalar(0.5);
+    cylinder.position.copy(midpoint);
 
-// Creating a third white dot
-        let dot3 = new Mesh(dotGeometry, dotMaterial);
-        dot3.position.set(-2, -0.8, 2); // Shift 1 unit on the x-axis
-        scene.add(dot3);
+    const axis = new Vector3(0, 1, 0);  // Default cylinder direction (Y-axis)
+    cylinder.quaternion.setFromUnitVectors(axis.normalize(), direction.clone().normalize());
 
-        // Create canvas for second text
-        const canvas3 = document.createElement('canvas');
-        const context3 = canvas3.getContext('2d');
-        canvas3.width = 1024;
-        canvas3.height = 512;
-        context3.fillStyle = 'rgba(255, 255, 255, 0)';
-        context3.fillRect(0, 0, canvas3.width, canvas3.height);
-        context3.fillStyle = 'white';
-        context3.font = '250px sans-serif';
-        context3.textAlign = 'center';
-        context3.textBaseline = 'middle';
-        context3.strokeStyle = 'rgba(0, 0, 0, 0.5)';
-        context3.lineWidth = 5;
-        context3.fillText('Tract 1', canvas3.width / 2, canvas3.height / 2);
-        context3.strokeText('Tract 1', canvas3.width / 2, canvas3.height / 2);
+    // Add the cylinder (BorderLine) to the scene
+    scene.add(cylinder);
 
-        // Create texture from second canvas
-        const texture3 = new Texture(canvas3);
-        texture3.needsUpdate = true;
-
-        // Create plane geometry and mesh for second text
-        const textPlane3 = new Mesh(geometry, material.clone());
-        textPlane3.material.map = texture3;
-        textPlane3.material.needsUpdate = true;
-
-        textPlane3.geometry.translate(0,0.05,0);
-
-        // Position and rotate third text plane
-        textPlane3.position.set(-2, -0.8, 2); // Shift 1 unit on the x-axis
-        textPlane3.rotation.y = Math.PI / 2;
-        textPlane3.scale.setScalar(0.8);
-        scene.add(textPlane3);
+    return cylinder;
+}
 
 
 
 
-// Creating a fourth white dot
-let dot4 = new Mesh(dotGeometry, dotMaterial);
-dot4.position.set(0, -1.6, 0); // Shift 1 unit on the x-axis and -0.5 on the z-axis
-scene.add(dot4);
 
-// Create canvas for fourth text
-const canvas4 = document.createElement('canvas');
-const context4 = canvas4.getContext('2d');
-canvas4.width = 1024;
-canvas4.height = 512;
-context4.fillStyle = 'rgba(255, 255, 255, 0)';
-context4.fillRect(0, 0, canvas4.width, canvas4.height);
-context4.fillStyle = 'white';
-context4.font = '250px sans-serif';
-context4.textAlign = 'center';
-context4.textBaseline = 'middle';
-context4.strokeStyle = 'rgba(0, 0, 0, 0.5)';
-context4.lineWidth = 5;
-context4.fillText('Tract 1', canvas4.width / 2, canvas4.height / 2);
-context4.strokeText('Tract 1', canvas4.width / 2, canvas4.height / 2);
+// Create BorderDots from the centralized control section
+const borderDots = {};
+borderDotPositions.forEach(dotData => {
+    const createdDot = createBorderDot(dotData);
+    borderDots[createdDot.name] = createdDot.mesh;
+});
 
-// Create texture from fourth canvas
-const texture4 = new Texture(canvas4);
-texture4.needsUpdate = true;
-
-// Create plane geometry and mesh for fourth text
-const textPlane4 = new Mesh(geometry, material.clone());
-textPlane4.material.map = texture4;
-textPlane4.material.needsUpdate = true;
-
-textPlane4.geometry.translate(0,0.2,0);
-
-// Position and rotate fourth text plane
-textPlane4.position.set(-0, -1.6, 0); // Shift 1 unit on the x-axis and -0.5 on the z-axis
-textPlane4.rotation.y = Math.PI / 2;
-textPlane4.scale.setScalar(0.8);
-scene.add(textPlane4);
+// Create BorderLines based on connections
+borderLineConnections.forEach(connection => {
+    const dot1 = borderDots[connection.start];
+    const dot2 = borderDots[connection.end];
+    if (dot1 && dot2) {
+        createBorderLineBetweenDots(dot1, dot2);
+    }
+});
 
 
 
 
+
+function createHotspot(hotspotConfig, index, totalHotspots) {
+    const { text, position, scale } = hotspotConfig;
+
+    // Create the dot
+    let dotGeometry = new SphereGeometry(0.03, 32, 32);
+    let dotMaterial = new MeshBasicMaterial({ color: 0xffffff });
+    let dot = new Mesh(dotGeometry, dotMaterial);
+    dot.position.set(position.x, position.y, position.z);
+    dot.scale.setScalar(scale);
+    scene.add(dot);
+
+    // Create canvas for text
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d');
+    canvas.width = 3072;  // Adjust the width for larger text if needed
+    canvas.height = 512;
+    context.fillStyle = 'rgba(255, 255, 255, 0)';
+    context.fillRect(0, 0, canvas.width, canvas.height);
+    
+    // Set the font to "Helvetica Neue Bold" with fallback options
+    context.font = '520 250px "Helvetica Neue", Helvetica, Arial, sans-serif';
+    
+    context.textAlign = 'center';
+    context.textBaseline = 'middle';
+    context.strokeStyle = 'rgba(0, 0, 0, 0.5)';
+    context.lineWidth = 5;
+    context.fillStyle = 'white';  // Set the fill color for the text
+    context.fillText(text, canvas.width / 2, canvas.height / 2);
+    context.strokeText(text, canvas.width / 2, canvas.height / 2);
+
+    // Create texture from canvas
+    const texture = new Texture(canvas);
+    texture.needsUpdate = true;
+
+    // Create plane geometry and mesh for the text
+    const geometry = new PlaneGeometry(2.4, 0.4);  // Match the canvas width
+    const material = new MeshStandardMaterial({
+        map: texture,
+        transparent: false,
+        alphaTest: 0.5,
+        side: DoubleSide,
+        premultipliedAlpha: true,
+        emissive: 'white',
+        emissiveIntensity: 2,
+    });
+    const textPlane = new Mesh(geometry, material);
+
+    // Position and rotate text plane
+    textPlane.position.set(position.x, position.y, position.z);
+    textPlane.rotation.y = Math.PI / 2;
+    textPlane.scale.setScalar(scale);
+
+    // IMPORTANT HEIGHT CONTROL: Adjust the y-translation dynamically
+    const yTranslation = 0.3 - (index / totalHotspots) * 0.05;
+    textPlane.geometry.translate(0, yTranslation, 0); 
+
+    scene.add(textPlane);
+
+    return { dot, textPlane };
+}
 
 
 
@@ -324,19 +390,23 @@ scene.add(textPlane4);
         let autoRotate = parameters.animation.autoRotate;
 
         function animate() {
-            if (autoRotate) {
-                angle += parameters.animation.speed;
-                camera.position.x = Math.sin(angle) * parameters.animation.startRadius;
-                camera.position.z = Math.cos(angle) * parameters.animation.startRadius;
-                camera.lookAt(scene.position); // Ensure the camera always looks at the scene
-            }
-            textPlane.lookAt(camera.position);
-textPlane2.lookAt(camera.position); textPlane3.lookAt(camera.position); textPlane4.lookAt(camera.position);
-// Update text orientation to always face the camera
-            controls.update();
-            renderer.render(scene, camera);
-            requestAnimationFrame(animate);
-        }
+    if (autoRotate) {
+        angle += parameters.animation.speed;
+        camera.position.x = Math.sin(angle) * parameters.animation.startRadius;
+        camera.position.z = Math.cos(angle) * parameters.animation.startRadius;
+        camera.lookAt(scene.position); // Ensure the camera always looks at the scene
+    }
+
+    // Make sure each text plane faces the camera
+    hotspots.forEach(hotspot => {
+        hotspot.textPlane.lookAt(camera.position);
+    });
+
+    controls.update();
+    renderer.render(scene, camera);
+    requestAnimationFrame(animate);
+}
+
         
 
 controls.addEventListener('start', () => autoRotate = false);
